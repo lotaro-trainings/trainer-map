@@ -30,7 +30,6 @@
 html, body { height: 100%; -webkit-font-smoothing: antialiased; }
 body { font-family: var(--sans); background: var(--bg-dark); color: var(--fg1); display: flex; flex-direction: column; overflow: hidden; }
 
-/* Header */
 header {
   background: var(--primary);
   border-bottom: 1px solid rgba(0,0,0,0.12);
@@ -39,31 +38,36 @@ header {
   flex-shrink: 0; z-index: 1000;
 }
 .logo-text { font-weight: 700; font-size: 14px; letter-spacing: 0.18em; color: var(--fg-inv); }
-.logo-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-light); margin-left: 16px; padding-left: 16px; border-left: 1px solid rgba(93,138,135,0.3); }
+.logo-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245,240,220,0.6); margin-left: 16px; padding-left: 16px; border-left: 1px solid rgba(245,240,220,0.25); }
 .header-left { display: flex; align-items: center; }
 .header-right { display: flex; align-items: center; gap: 12px; }
-.count-badge { font-family: var(--mono); font-size: 12px; color: var(--fg3); letter-spacing: 0.04em; }
+.count-badge { font-family: var(--mono); font-size: 12px; color: rgba(245,240,220,0.6); letter-spacing: 0.04em; }
 .count-badge strong { color: var(--fg-inv); font-weight: 600; }
-.view-toggle { display: flex; background: rgba(255,255,255,0.06); border: 1px solid rgba(93,138,135,0.3); border-radius: 6px; padding: 2px; gap: 1px; }
-.view-toggle button { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--fg3); background: none; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
-.view-toggle button.active { background: rgba(255,255,255,0.1); color: var(--fg-inv); }
-.btn-eintragen { font-family: var(--sans); font-size: 13px; font-weight: 600; background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; transition: background 0.15s; }
-.btn-eintragen:hover { background: var(--primary-dark); }
+.view-toggle { display: flex; background: rgba(0,0,0,0.15); border: 1px solid rgba(245,240,220,0.2); border-radius: 6px; padding: 2px; gap: 1px; }
+.view-toggle button { font-family: var(--sans); font-size: 12px; font-weight: 500; color: rgba(245,240,220,0.6); background: none; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+.view-toggle button.active { background: rgba(255,255,255,0.15); color: var(--fg-inv); }
+.btn-eintragen { font-family: var(--sans); font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.2); color: var(--fg-inv); border: 1px solid rgba(245,240,220,0.25); border-radius: 6px; padding: 8px 18px; cursor: pointer; transition: background 0.15s; }
+.btn-eintragen:hover { background: rgba(0,0,0,0.3); }
 
-/* Layout */
 .main { flex: 1; display: flex; overflow: hidden; min-height: 0; }
-
-/* Map — full bleed, no grey gaps */
-#map {
-  flex: 1;
-  min-width: 0;
-  background: #a8d8d8;
-}
-
-/* Remove leaflet's default grey background */
+#map { flex: 1; min-width: 0; background: #a8d8d8; }
 .leaflet-container { background: #a8d8d8 !important; }
 
-/* Sidebar */
+/* Loading overlay */
+.map-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(241,246,242,0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500;
+  font-size: 13px; color: var(--fg2);
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s;
+}
+.map-loading.hidden { opacity: 0; pointer-events: none; }
+
 .sidebar { width: 300px; background: var(--bg); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; transition: width 0.25s ease; }
 .sidebar.hidden { width: 0; }
 .sidebar-head { padding: 20px 20px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -82,13 +86,9 @@ header {
 .t-name { font-size: 13px; font-weight: 600; color: var(--fg1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t-loc { font-size: 11px; color: var(--fg3); margin-top: 1px; }
 .t-role { font-size: 11px; color: var(--primary-light); font-weight: 500; margin-top: 1px; }
-.t-del { background: none; border: none; color: var(--border-strong); cursor: pointer; font-size: 14px; padding: 4px; border-radius: 4px; opacity: 0; transition: color 0.12s; }
-.trainer-row:hover .t-del { opacity: 1; }
-.t-del:hover { color: #C0392B; }
 .empty-state { text-align: center; padding: 48px 20px; color: var(--fg3); }
 .empty-state p { font-size: 13px; margin-top: 8px; }
 
-/* Popup */
 .leaflet-popup-content-wrapper { background: var(--bg) !important; border: 1px solid var(--border) !important; border-radius: 10px !important; box-shadow: 0 4px 20px rgba(26,38,36,0.14) !important; padding: 0 !important; }
 .leaflet-popup-content { margin: 0 !important; }
 .leaflet-popup-tip { background: var(--bg) !important; }
@@ -100,11 +100,9 @@ header {
 .popup-city { font-size: 12px; color: var(--fg2); }
 .popup-role-tag { display: inline-block; font-size: 11px; font-weight: 600; background: var(--primary-faint); color: var(--primary); border-radius: 4px; padding: 2px 8px; margin-top: 5px; }
 
-/* Pin marker */
 .lot-pin { width: 36px; height: 36px; background: var(--primary); border: 2.5px solid #fff; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(26,38,36,0.35); overflow: hidden; }
 .lot-pin-inner { transform: rotate(45deg); font-family: var(--sans); font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 
-/* Form overlay */
 .overlay { position: fixed; inset: 0; background: rgba(26,38,36,0.65); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.18s; backdrop-filter: blur(3px); }
 .overlay.on { opacity: 1; pointer-events: all; }
 .form-box { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; width: 400px; max-width: 94vw; padding: 28px 28px 24px; box-shadow: 0 16px 48px rgba(26,38,36,0.2); transform: translateY(8px); transition: transform 0.18s; }
@@ -126,7 +124,6 @@ header {
 .btn-ok { font-family: var(--sans); font-size: 13px; font-weight: 600; flex: 2; background: var(--primary); border: none; color: #fff; border-radius: 6px; padding: 10px; cursor: pointer; transition: background 0.12s; }
 .btn-ok:hover { background: var(--primary-dark); }
 .btn-ok:disabled { opacity: 0.5; cursor: default; }
-
 .leaflet-bar { border: 1px solid var(--border) !important; border-radius: 8px !important; overflow: hidden; box-shadow: 0 2px 8px rgba(26,38,36,0.1) !important; }
 .leaflet-bar a { border-bottom-color: var(--border) !important; color: var(--fg1) !important; }
 </style>
@@ -148,8 +145,9 @@ header {
   </div>
 </header>
 
-<div class="main">
+<div class="main" style="position:relative;">
   <div id="map"></div>
+  <div class="map-loading" id="map-loading">Loading trainers…</div>
   <div class="sidebar hidden" id="sidebar">
     <div class="sidebar-head">
       <h2>All Trainers</h2>
@@ -180,8 +178,8 @@ header {
       </div>
     </div>
     <div class="f-group">
-      <label>Role (optional)</label>
-      <input type="text" id="f-role" placeholder="e.g. Senior Coach">
+      <label>Topics / Role (optional)</label>
+      <input type="text" id="f-role" placeholder="e.g. Leadership, Sales, Agile...">
     </div>
     <div class="f-group">
       <label>Photo URL (optional)</label>
@@ -196,48 +194,46 @@ header {
 </div>
 
 <script>
-// ── Map — worldCopyJump=true keeps only one world visible while allowing infinite scroll
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxGhnoyNkk-IVEFmMqz0M2Yze6VPnd-EUvCjBjNkyDADjoVVYg1wPCpe0tJr3muAqeuw/exec';
+
 const map = L.map('map', {
-  center: [51, 12],
-  zoom: 4,
-  minZoom: 2,
-  maxZoom: 16,
-  worldCopyJump: true,   // snaps back so only one copy is shown
-  zoomControl: true
+  center: [51, 12], zoom: 4, minZoom: 2, maxZoom: 16,
+  worldCopyJump: true, zoomControl: true
 });
 
-// CartoDB Voyager — colourful, English labels, no API key
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 19
+  subdomains: 'abcd', maxZoom: 19
 }).addTo(map);
 
-// ── State
 let trainers = [];
 let mmap = {};
-const KEY = 'lotaro-trainers-v1';
 
+// ── Load from Google Sheets ──────────────────────────────────────────────────
 async function load() {
   try {
-    const r = await window.storage.get(KEY);
-    trainers = r ? JSON.parse(r.value) : demo();
-  } catch(e) { trainers = demo(); }
+    const r = await fetch(SCRIPT_URL);
+    const data = await r.json();
+    trainers = data.filter(t => t.name && t.lat && t.lng).map(t => ({
+      ...t,
+      lat: parseFloat(t.lat),
+      lng: parseFloat(t.lng)
+    }));
+  } catch(e) {
+    console.error('Could not load trainers:', e);
+    trainers = [];
+  }
+  document.getElementById('map-loading').classList.add('hidden');
   render();
 }
 
-async function save() {
-  try { await window.storage.set(KEY, JSON.stringify(trainers)); } catch(e) {}
-}
-
-function demo() {
-  return [
-    { id: 1, name: 'Anna Schmidt',  city: 'Berlin',    country: 'Germany', role: 'Senior Coach',   photo: '', lat: 52.520, lng: 13.405 },
-    { id: 2, name: "James O'Brien", city: 'London',    country: 'UK',      role: 'Trainer',        photo: '', lat: 51.505, lng: -0.090 },
-    { id: 3, name: 'Marie Dupont',  city: 'Paris',     country: 'France',  role: 'Coach',          photo: '', lat: 48.857, lng: 2.352  },
-    { id: 4, name: 'Carlos Ruiz',   city: 'Barcelona', country: 'Spain',   role: 'Trainer',        photo: '', lat: 41.385, lng: 2.173  },
-    { id: 5, name: 'Yuki Tanaka',   city: 'Tokyo',     country: 'Japan',   role: 'Senior Trainer', photo: '', lat: 35.689, lng: 139.692},
-  ];
+// ── Save to Google Sheets ────────────────────────────────────────────────────
+async function saveTrainer(t) {
+  const r = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(t)
+  });
+  return r.json();
 }
 
 const ini = name => name.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0,2);
@@ -273,7 +269,7 @@ function render() {
   Object.values(mmap).forEach(m => map.removeLayer(m));
   mmap = {};
   trainers.forEach(t => {
-    if (t.lat == null) return;
+    if (!t.lat || !t.lng) return;
     const m = L.marker([t.lat, t.lng], { icon: makeIcon(t) });
     m.bindPopup(popupHTML(t), { maxWidth: 260 });
     m.addTo(map);
@@ -298,28 +294,22 @@ function renderList() {
     `<div class="country-group">
       <div class="country-label">${country}</div>
       ${list.map(t => `
-        <div class="trainer-row" onclick="flyTo(${t.id})">
+        <div class="trainer-row" onclick="flyTo('${t.id}')">
           <div class="t-avatar">${avHTML(t)}</div>
           <div class="t-info">
             <div class="t-name">${t.name}</div>
             <div class="t-loc">${t.city}</div>
             ${t.role ? `<div class="t-role">${t.role}</div>` : ''}
           </div>
-          <button class="t-del" onclick="event.stopPropagation();del(${t.id})" title="Remove">✕</button>
         </div>`).join('')}
     </div>`).join('');
 }
 
 function flyTo(id) {
-  const t = trainers.find(x => x.id === id);
-  if (!t || t.lat == null) return;
+  const t = trainers.find(x => x.id == id);
+  if (!t) return;
   map.flyTo([t.lat, t.lng], 7, { duration: 1.1 });
   setTimeout(() => mmap[id] && mmap[id].openPopup(), 1200);
-}
-
-function del(id) {
-  trainers = trainers.filter(t => t.id !== id);
-  save(); render();
 }
 
 function setView(v) {
@@ -382,11 +372,19 @@ async function submitForm() {
   }
 
   const t = { id: Date.now(), name, city, country, role, photo, lat: coords.lat, lng: coords.lng };
-  trainers.push(t);
-  await save();
-  render();
-  closeForm();
-  setTimeout(() => flyTo(t.id), 300);
+
+  setHint('Saving…', false);
+  try {
+    await saveTrainer(t);
+    trainers.push(t);
+    render();
+    closeForm();
+    setTimeout(() => flyTo(t.id), 300);
+  } catch(e) {
+    setHint('Could not save — please try again.', true);
+    btn.textContent = 'Add to map';
+    btn.disabled = false;
+  }
 }
 
 document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForm(); });
