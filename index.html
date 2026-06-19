@@ -229,10 +229,18 @@ async function load() {
 
 // ── Save to Google Sheets ────────────────────────────────────────────────────
 async function saveTrainer(t) {
-  const r = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(t)
+  const params = new URLSearchParams({
+    action: "add",
+    id: t.id,
+    name: t.name,
+    city: t.city,
+    country: t.country,
+    role: t.role || "",
+    photo: t.photo || "",
+    lat: t.lat,
+    lng: t.lng
   });
+  const r = await fetch(SCRIPT_URL + "?" + params.toString());
   return r.json();
 }
 
