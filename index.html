@@ -225,6 +225,14 @@ async function load() {
   }
   document.getElementById('map-loading').classList.add('hidden');
   render();
+  // After render, fit map to show all trainers
+  if (trainers.length > 0) {
+    const validMarkers = Object.values(mmap);
+    if (validMarkers.length > 0) {
+      const group = L.featureGroup(validMarkers);
+      map.fitBounds(group.getBounds().pad(0.4));
+    }
+  }
 }
 
 // ── Save to Google Sheets ────────────────────────────────────────────────────
