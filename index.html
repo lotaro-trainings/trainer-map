@@ -245,8 +245,8 @@ async function saveTrainer(t) {
     country: t.country,
     role: t.role || "",
     photo: t.photo || "",
-    lat: t.lat,
-    lng: t.lng
+    lat: "'" + t.lat,
+    lng: "'" + t.lng
   });
   const r = await fetch(SCRIPT_URL + "?" + params.toString());
   return r.json();
