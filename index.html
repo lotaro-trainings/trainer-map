@@ -12,10 +12,8 @@
 :root {
   --primary: #3A6260;
   --primary-dark: #2C4E4C;
-  --primary-darker: #1E3635;
-  --primary-light: #5A8A87;
   --primary-faint: #EAF0EF;
-  --accent: #F5F0DC;
+  --primary-light: #5A8A87;
   --bg: #FFFFFF;
   --bg-subtle: #F1F6F2;
   --bg-dark: #1E3635;
@@ -25,13 +23,14 @@
   --fg-inv: #F5F0DC;
   --border: #DDE8E7;
   --border-strong: #C0D4D2;
-  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; }
-body { font-family: var(--sans); background: var(--bg-dark); color: var(--fg1); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+html, body { height: 100%; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--sans); background: var(--bg-dark); color: var(--fg1); display: flex; flex-direction: column; overflow: hidden; }
 
+/* Header */
 header {
   background: var(--bg-dark);
   border-bottom: 1px solid rgba(93,138,135,0.2);
@@ -51,9 +50,20 @@ header {
 .btn-eintragen { font-family: var(--sans); font-size: 13px; font-weight: 600; background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; transition: background 0.15s; }
 .btn-eintragen:hover { background: var(--primary-dark); }
 
-.main { flex: 1; display: flex; overflow: hidden; }
-#map { flex: 1; }
+/* Layout */
+.main { flex: 1; display: flex; overflow: hidden; min-height: 0; }
 
+/* Map — full bleed, no grey gaps */
+#map {
+  flex: 1;
+  min-width: 0;
+  background: #a8d8d8;
+}
+
+/* Remove leaflet's default grey background */
+.leaflet-container { background: #a8d8d8 !important; }
+
+/* Sidebar */
 .sidebar { width: 300px; background: var(--bg); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; transition: width 0.25s ease; }
 .sidebar.hidden { width: 0; }
 .sidebar-head { padding: 20px 20px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -78,6 +88,7 @@ header {
 .empty-state { text-align: center; padding: 48px 20px; color: var(--fg3); }
 .empty-state p { font-size: 13px; margin-top: 8px; }
 
+/* Popup */
 .leaflet-popup-content-wrapper { background: var(--bg) !important; border: 1px solid var(--border) !important; border-radius: 10px !important; box-shadow: 0 4px 20px rgba(26,38,36,0.14) !important; padding: 0 !important; }
 .leaflet-popup-content { margin: 0 !important; }
 .leaflet-popup-tip { background: var(--bg) !important; }
@@ -87,25 +98,13 @@ header {
 .popup-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .popup-name { font-size: 14px; font-weight: 600; color: var(--fg1); margin-bottom: 2px; }
 .popup-city { font-size: 12px; color: var(--fg2); }
-.popup-role-tag { display: inline-block; font-size: 11px; font-weight: 600; background: var(--primary-faint); color: var(--primary); border-radius: 4px; padding: 2px 8px; margin-top: 5px; letter-spacing: 0.02em; }
+.popup-role-tag { display: inline-block; font-size: 11px; font-weight: 600; background: var(--primary-faint); color: var(--primary); border-radius: 4px; padding: 2px 8px; margin-top: 5px; }
 
-.lot-pin {
-  width: 36px; height: 36px;
-  background: var(--primary);
-  border: 2.5px solid #fff;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 3px 10px rgba(26,38,36,0.3);
-  overflow: hidden;
-}
-.lot-pin-inner {
-  transform: rotate(45deg);
-  font-family: var(--sans); font-size: 11px; font-weight: 700; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  width: 100%; height: 100%;
-}
+/* Pin marker */
+.lot-pin { width: 36px; height: 36px; background: var(--primary); border: 2.5px solid #fff; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(26,38,36,0.35); overflow: hidden; }
+.lot-pin-inner { transform: rotate(45deg); font-family: var(--sans); font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 
+/* Form overlay */
 .overlay { position: fixed; inset: 0; background: rgba(26,38,36,0.65); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.18s; backdrop-filter: blur(3px); }
 .overlay.on { opacity: 1; pointer-events: all; }
 .form-box { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; width: 400px; max-width: 94vw; padding: 28px 28px 24px; box-shadow: 0 16px 48px rgba(26,38,36,0.2); transform: translateY(8px); transition: transform 0.18s; }
@@ -153,7 +152,7 @@ header {
   <div id="map"></div>
   <div class="sidebar hidden" id="sidebar">
     <div class="sidebar-head">
-      <h2>Alle Trainer</h2>
+      <h2>All Trainers</h2>
       <div class="sidebar-meta" id="sidebar-meta">—</div>
     </div>
     <div class="trainer-list" id="trainer-list"></div>
@@ -163,62 +162,58 @@ header {
 <div class="overlay" id="overlay">
   <div class="form-box">
     <div class="form-head">
-      <h2>Trainer eintragen</h2>
-      <p>Name und Standort — wird auf der Karte gepinnt.</p>
+      <h2>Add trainer</h2>
+      <p>Name and location — will be pinned on the map.</p>
     </div>
     <div class="f-group">
       <label>Name</label>
-      <input type="text" id="f-name" placeholder="Vorname Nachname">
+      <input type="text" id="f-name" placeholder="First Last">
     </div>
     <div class="f-row">
       <div class="f-group">
-        <label>Stadt</label>
-        <input type="text" id="f-city" placeholder="z.B. München">
+        <label>City</label>
+        <input type="text" id="f-city" placeholder="e.g. Munich">
       </div>
       <div class="f-group">
-        <label>Land</label>
-        <input type="text" id="f-country" placeholder="z.B. Deutschland">
+        <label>Country</label>
+        <input type="text" id="f-country" placeholder="e.g. Germany">
       </div>
     </div>
     <div class="f-group">
-      <label>Rolle (optional)</label>
-      <input type="text" id="f-role" placeholder="z.B. Senior Coach">
+      <label>Role (optional)</label>
+      <input type="text" id="f-role" placeholder="e.g. Senior Coach">
     </div>
     <div class="f-group">
-      <label>Foto-URL (optional)</label>
+      <label>Photo URL (optional)</label>
       <input type="text" id="f-photo" placeholder="https://...">
     </div>
     <div class="f-hint" id="f-hint"></div>
     <div class="form-actions">
-      <button class="btn-cancel" onclick="closeForm()">Abbrechen</button>
-      <button class="btn-ok" id="btn-ok" onclick="submitForm()">Auf Karte hinzufügen</button>
+      <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+      <button class="btn-ok" id="btn-ok" onclick="submitForm()">Add to map</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── Map ──────────────────────────────────────────────────────────────────────
-const worldBounds = L.latLngBounds(L.latLng(-80, -180), L.latLng(85, 180));
-
+// ── Map — worldCopyJump=true keeps only one world visible while allowing infinite scroll
 const map = L.map('map', {
   center: [30, 15],
   zoom: 2,
   minZoom: 2,
   maxZoom: 16,
-  maxBounds: worldBounds,
-  maxBoundsViscosity: 1.0,
-  worldCopyJump: false
+  worldCopyJump: true,   // snaps back so only one copy is shown
+  zoomControl: true
 });
 
-// CartoDB Voyager — warme, schöne Farben, kein API Key nötig
+// CartoDB Voyager — colourful, English labels, no API key
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
   attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
   subdomains: 'abcd',
-  maxZoom: 19,
-  noWrap: true
+  maxZoom: 19
 }).addTo(map);
 
-// ── State ────────────────────────────────────────────────────────────────────
+// ── State
 let trainers = [];
 let mmap = {};
 const KEY = 'lotaro-trainers-v1';
@@ -237,15 +232,14 @@ async function save() {
 
 function demo() {
   return [
-    { id: 1, name: 'Anna Schmidt',  city: 'Berlin',    country: 'Deutschland', role: 'Senior Coach',   photo: '', lat: 52.520, lng: 13.405 },
-    { id: 2, name: "James O'Brien", city: 'London',    country: 'UK',          role: 'Trainer',        photo: '', lat: 51.505, lng: -0.090 },
-    { id: 3, name: 'Marie Dupont',  city: 'Paris',     country: 'Frankreich',  role: 'Coach',          photo: '', lat: 48.857, lng: 2.352  },
-    { id: 4, name: 'Carlos Ruiz',   city: 'Barcelona', country: 'Spanien',     role: 'Trainer',        photo: '', lat: 41.385, lng: 2.173  },
-    { id: 5, name: 'Yuki Tanaka',   city: 'Tokyo',     country: 'Japan',       role: 'Senior Trainer', photo: '', lat: 35.689, lng: 139.692},
+    { id: 1, name: 'Anna Schmidt',  city: 'Berlin',    country: 'Germany', role: 'Senior Coach',   photo: '', lat: 52.520, lng: 13.405 },
+    { id: 2, name: "James O'Brien", city: 'London',    country: 'UK',      role: 'Trainer',        photo: '', lat: 51.505, lng: -0.090 },
+    { id: 3, name: 'Marie Dupont',  city: 'Paris',     country: 'France',  role: 'Coach',          photo: '', lat: 48.857, lng: 2.352  },
+    { id: 4, name: 'Carlos Ruiz',   city: 'Barcelona', country: 'Spain',   role: 'Trainer',        photo: '', lat: 41.385, lng: 2.173  },
+    { id: 5, name: 'Yuki Tanaka',   city: 'Tokyo',     country: 'Japan',   role: 'Senior Trainer', photo: '', lat: 35.689, lng: 139.692},
   ];
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 const ini = name => name.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0,2);
 
 function avHTML(t) {
@@ -253,14 +247,14 @@ function avHTML(t) {
   return ini(t.name);
 }
 
-// ── Markers ──────────────────────────────────────────────────────────────────
 function makeIcon(t) {
+  const inner = t.photo
+    ? `<img src="${t.photo}" style="width:32px;height:32px;object-fit:cover;border-radius:50%;transform:rotate(45deg);" onerror="this.outerHTML='<span>${ini(t.name)}</span>'">`
+    : ini(t.name);
   return L.divIcon({
     className: '',
-    html: `<div class="lot-pin"><div class="lot-pin-inner">${t.photo ? `<img src="${t.photo}" style="width:32px;height:32px;object-fit:cover;border-radius:50%;transform:rotate(45deg);" onerror="this.outerHTML='<span>${ini(t.name)}</span>'">` : ini(t.name)}</div></div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -38]
+    html: `<div class="lot-pin"><div class="lot-pin-inner">${inner}</div></div>`,
+    iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -38]
   });
 }
 
@@ -275,7 +269,6 @@ function popupHTML(t) {
   </div>`;
 }
 
-// ── Render ───────────────────────────────────────────────────────────────────
 function render() {
   Object.values(mmap).forEach(m => map.removeLayer(m));
   mmap = {};
@@ -293,14 +286,14 @@ function render() {
 function renderList() {
   const el = document.getElementById('trainer-list');
   if (!trainers.length) {
-    el.innerHTML = `<div class="empty-state"><p>Noch keine Trainer eingetragen.</p></div>`;
+    el.innerHTML = `<div class="empty-state"><p>No trainers added yet.</p></div>`;
     document.getElementById('sidebar-meta').textContent = '—';
     return;
   }
   const grouped = {};
   trainers.forEach(t => (grouped[t.country] = grouped[t.country] || []).push(t));
   const nc = Object.keys(grouped).length;
-  document.getElementById('sidebar-meta').textContent = `${trainers.length} Trainer · ${nc} ${nc===1?'Land':'Länder'}`;
+  document.getElementById('sidebar-meta').textContent = `${trainers.length} trainers · ${nc} ${nc===1?'country':'countries'}`;
   el.innerHTML = Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).map(([country, list]) =>
     `<div class="country-group">
       <div class="country-label">${country}</div>
@@ -312,7 +305,7 @@ function renderList() {
             <div class="t-loc">${t.city}</div>
             ${t.role ? `<div class="t-role">${t.role}</div>` : ''}
           </div>
-          <button class="t-del" onclick="event.stopPropagation();del(${t.id})" title="Entfernen">✕</button>
+          <button class="t-del" onclick="event.stopPropagation();del(${t.id})" title="Remove">✕</button>
         </div>`).join('')}
     </div>`).join('');
 }
@@ -346,7 +339,7 @@ function closeForm() {
   ['f-name','f-city','f-country','f-role','f-photo'].forEach(id => document.getElementById(id).value = '');
   setHint('', false);
   const btn = document.getElementById('btn-ok');
-  btn.textContent = 'Auf Karte hinzufügen';
+  btn.textContent = 'Add to map';
   btn.disabled = false;
 }
 
@@ -373,17 +366,17 @@ async function submitForm() {
   const role    = document.getElementById('f-role').value.trim();
   const photo   = document.getElementById('f-photo').value.trim();
 
-  if (!name || !city || !country) { setHint('Bitte Name, Stadt und Land ausfüllen.', true); return; }
+  if (!name || !city || !country) { setHint('Please fill in name, city and country.', true); return; }
 
   const btn = document.getElementById('btn-ok');
-  btn.textContent = 'Suche Koordinaten…';
+  btn.textContent = 'Looking up location…';
   btn.disabled = true;
-  setHint(`Suche "${city}" …`, false);
+  setHint(`Searching for "${city}"…`, false);
 
   const coords = await geocode(city, country);
   if (!coords) {
-    setHint('Stadt nicht gefunden — bitte prüfen.', true);
-    btn.textContent = 'Auf Karte hinzufügen';
+    setHint('City not found — please check spelling.', true);
+    btn.textContent = 'Add to map';
     btn.disabled = false;
     return;
   }
