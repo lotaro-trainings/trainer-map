@@ -100,6 +100,11 @@ header {
 .popup-city { font-size: 12px; color: var(--fg2); }
 .popup-role-tag { display: inline-block; font-size: 11px; font-weight: 600; background: var(--primary-faint); color: var(--primary); border-radius: 4px; padding: 2px 8px; margin-top: 5px; }
 
+.lot-pin-multi {
+  background: var(--primary-dark) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
 .lot-pin { width: 36px; height: 36px; background: var(--primary); border: 2.5px solid #fff; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(26,38,36,0.35); overflow: hidden; }
 .lot-pin-inner { transform: rotate(45deg); font-family: var(--sans); font-size: 11px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 
@@ -259,7 +264,16 @@ function avHTML(t) {
   return ini(t.name);
 }
 
-function makeIcon(t) {
+function makeGroupIcon(group) {
+  const t = group[0];
+  const count = group.length;
+  if (count > 1) {
+    return L.divIcon({
+      className: '',
+      html: `<div class="lot-pin lot-pin-multi"><div class="lot-pin-inner">${count}</div></div>`,
+      iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -38]
+    });
+  }
   const inner = t.photo
     ? `<img src="${t.photo}" style="width:32px;height:32px;object-fit:cover;border-radius:50%;transform:rotate(45deg);" onerror="this.outerHTML='<span>${ini(t.name)}</span>'">`
     : ini(t.name);
@@ -270,27 +284,42 @@ function makeIcon(t) {
   });
 }
 
-function popupHTML(t) {
-  return `<div class="popup-inner">
-    <div class="popup-av">${avHTML(t)}</div>
-    <div>
-      <div class="popup-name">${t.name}</div>
-      <div class="popup-city">${t.city}, ${t.country}</div>
-      ${t.role ? `<div class="popup-role-tag">${t.role}</div>` : ''}
-    </div>
-  </div>`;
+function groupPopupHTML(group) {
+  return `<div style="padding:10px 12px;min-width:200px;">
+    ${group.map(t => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #DDE8E7;" class="popup-row">
+        <div class="popup-av" style="width:38px;height:38px;font-size:12px;flex-shrink:0;">${avHTML(t)}</div>
+        <div>
+          <div class="popup-name" style="font-size:13px;">${t.name}</div>
+          <div class="popup-city">${t.city}, ${t.country}</div>
+          ${t.role ? `<div class="popup-role-tag">${t.role}</div>` : ''}
+        </div>
+      </div>`).join('')}
+  </div>`.replace(/border-bottom:1px solid #DDE8E7;"[^>]*>\s*<\/div>\s*$/, 'border-bottom:none;">');
 }
 
 function render() {
   Object.values(mmap).forEach(m => map.removeLayer(m));
   mmap = {};
+
+  // Group trainers by city+country
+  const cityGroups = {};
   trainers.forEach(t => {
     if (!t.lat || !t.lng) return;
-    const m = L.marker([t.lat, t.lng], { icon: makeIcon(t) });
-    m.bindPopup(popupHTML(t), { maxWidth: 260 });
-    m.addTo(map);
-    mmap[t.id] = m;
+    const key = t.city + '|' + t.country;
+    if (!cityGroups[key]) cityGroups[key] = [];
+    cityGroups[key].push(t);
   });
+
+  Object.entries(cityGroups).forEach(([key, group]) => {
+    const t = group[0];
+    const m = L.marker([t.lat, t.lng], { icon: makeGroupIcon(group) });
+    m.bindPopup(groupPopupHTML(group), { maxWidth: 300 });
+    m.addTo(map);
+    // Store marker for each trainer id in this group
+    group.forEach(tr => mmap[tr.id] = m);
+  });
+
   document.getElementById('count').textContent = trainers.length;
   renderList();
 }
